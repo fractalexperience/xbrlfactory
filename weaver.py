@@ -3,16 +3,21 @@ class Weaver:
         self.pool = data_pool
         self.handlers = render_methods
 
-    def invoke(self, name, obj, level):
+    def invoke(self, name, obj, level=0):
         render_method = self.handlers.get(name)
         if not render_method:
             return
         render_method(obj, level)
 
+    def loop_concepts(self):
+        for tx in [t[1] for t in self.pool.taxonomies.items()]:
+            for concept in tx.concepts.items():
+                self.invoke('concept_row', concept[1])
+
     def loop_base_set(self, concept, bs_key, level):
         if concept is None:
             return
-        self.invoke('concept', concept, level)
+        self.invoke('concept_short', concept, level)
         cbs_dn = concept.chain_dn.get(bs_key, None)
         if cbs_dn is None:
             return
@@ -23,6 +28,6 @@ class Weaver:
     def loop_base_sets(self):
         for tx in [t[1] for t in self.pool.taxonomies.items()]:
             for bs in tx.base_sets.items():
-                self.invoke('base_set', bs, 0)
+                self.invoke('base_set', bs)
                 for r in bs[1].roots:
                     self.loop_base_set(r, bs[0], 5)
