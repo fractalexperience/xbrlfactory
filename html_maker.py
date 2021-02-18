@@ -22,6 +22,7 @@ class HtmlMaker:
 
     def loop_list(self, lst, title, columns=None):
         if title:
+            self.output = []  # At first recursion level initialize output
             self.html_header(title)
             self.table_header(columns)
         for obj in lst:
@@ -29,11 +30,16 @@ class HtmlMaker:
                 self.output.append('<tr>')
                 self.loop_list(obj, None)
                 self.output.append('</tr>')
+                continue
+            if isinstance(obj, str):
+                self.output.append(f'<td>{obj}</td>')
+                continue
+            self.output.append('<tr>')
+            if isinstance(obj, dict):
+                self.loop_dict(obj, columns)
             else:
-                if isinstance(obj, str):
-                    self.output.append(f'<td>{obj}</td>')
-                else:
-                    self.loop_object(obj)
+                self.loop_object(obj)
+            self.output.append('</tr>')
         if title:
             self.table_footer()
             self.html_footer()
@@ -42,8 +48,12 @@ class HtmlMaker:
         for obj in lst:
             self.loop_object(obj)
 
+    def loop_dict(self, dct, columns):
+        for c in columns:
+            v = dct.get(c)
+            self.output.append(f'<td>{v if v else "&nbsp;"}</td>')
+
     def loop_object(self, obj):
-        self.output.append('<tr>')
         for i in inspect.getmembers(obj):
             # Ignores anything starting with underscore
             # (that is, private and protected attributes)
@@ -51,7 +61,6 @@ class HtmlMaker:
                 # Ignores methods
                 if not inspect.ismethod(i[1]):
                     self.output.append(f'<td>{i}</td>')
-        self.output.append('</tr>')
 
     def r_base_sets(self):
         self.output = []
