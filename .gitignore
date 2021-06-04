@@ -127,3 +127,23 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# PyCharm
+.idea
+
+wsl.distributions.xml
+debugger.xml
+colors.scheme.xml
+ide-features-trainer.xml
+filetypes.xml
+ide.general.xml
+pluginAdvertiser.xml
+wsl.distributions.xml
+_windows
+inspection
+
+_templates
+_static
+index.rst
+conf.py
+.idea/xbrlfactory.iml
